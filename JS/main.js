@@ -41,29 +41,34 @@ class SopaDeLetras {
     return this.tablero;
   }
 }
-function mostrarEnPantalla(sopa) {
-  const container = document.getElementById("sopa-container");
-  container.innerHTML = "";
-  sopa.forEach((fila) => {
-    const filaDiv = document.createElement("div");
-    filaDiv.style.display = "flex";
-    fila.forEach((letra) => {
-      const letraDiv = document.createElement("div");
-      letraDiv.textContent = letra;
-      letraDiv.style.border = "1px solid black";
-      letraDiv.style.width = "30px";
-      letraDiv.style.height = "30px";
-      letraDiv.style.display = "flex";
-      letraDiv.style.justifyContent = "center";
-      letraDiv.style.alignItems = "center";
-      letraDiv.style.userSelect = "none";
-      letraDiv.style.fontWeight = "bold";
-      filaDiv.appendChild(letraDiv);
-    });
-    container.appendChild(filaDiv);
+//
+document.addEventListener("DOMContentLoaded", () => {
+  const formulario = document.getElementById("formulario");
+  const inputPalabra = document.getElementById("inputPalabra");
+  const listaPalabras = document.getElementById("listaPalabras");
+  formulario.addEventListener("submit", (event) => {
+    event.preventDefault();
+
+    const textContent = inputPalabra.value.trim();
+    if (textContent) {
+      const nuevaPalabra = new Palabra(textContent);
+      agregarPalabraAlista(nuevaPalabra);
+    }
   });
-}
-const sopa = new SopaDeLetras(10, 10);
-sopa.agregarPalabra(new Palabra("JS", 0, 0, "horizontal"));
-const tableroConLetras = sopa.mostrarTablero();
-mostrarEnPantalla(tableroConLetras);
+
+  function agregarPalabraAlista(palabra) {
+    const li = document.createElement("li");
+    li.textContent = palabra.texto;
+
+    if (listaPalabras.children.length >= 5) {
+      alert("Solo puedes ingresar un máximo de 5 palabras.");
+      inputPalabra.disabled = true;
+      document.getElementById("btn").disabled = true;
+      return;
+    }
+
+    listaPalabras.appendChild(li);
+  }
+});
+
+//
