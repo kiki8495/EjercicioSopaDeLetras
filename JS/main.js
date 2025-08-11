@@ -25,32 +25,72 @@ class SopaDeLetras {
   }
 
   agregarPalabra(palabra) {
+    const existe = this.palabras.some(
+      (p) => p.texto.toUpperCase() === palabra.texto.toUpperCase()
+    );
+
+    if (existe) {
+      alert(`La palabra "${palabra.texto}" ya fue agregada.`);
+      return false;
+    }
+
     this.palabras.push(palabra);
+    return true;
   }
   agregarPalabraTablero() {
     this.palabras.forEach((palabra) => {
       let colocada = false;
       while (!colocada) {
-        let fila = Math.floor(Math.random() * this.filas);
-        let columnaInicio = Math.floor(
-          Math.random() * (this.columnas - palabra.texto.length)
-        );
+        // Dirección aleatoria: 0 = horizontal, 1 = vertical
+        let direccion = Math.floor(Math.random() * 2);
+        let filaInicio, columnaInicio;
         let espacioLibre = true;
-        for (let i = 0; i < palabra.texto.length; i++) {
-          if (this.tablero[fila][columnaInicio + i] !== "") {
-            espacioLibre = false;
-            break;
-          }
-        }
-        if (espacioLibre) {
+
+        if (direccion === 0) {
+          // HORIZONTAL
+          filaInicio = Math.floor(Math.random() * this.filas);
+          columnaInicio = Math.floor(
+            Math.random() * (this.columnas - palabra.texto.length)
+          );
+
           for (let i = 0; i < palabra.texto.length; i++) {
-            this.tablero[fila][columnaInicio + i] = palabra.texto[i];
+            if (this.tablero[filaInicio][columnaInicio + i] !== "") {
+              espacioLibre = false;
+              break;
+            }
           }
-          colocada = true;
+
+          if (espacioLibre) {
+            for (let i = 0; i < palabra.texto.length; i++) {
+              this.tablero[filaInicio][columnaInicio + i] = palabra.texto[i];
+            }
+            colocada = true;
+          }
+        } else {
+          // VERTICAL
+          filaInicio = Math.floor(
+            Math.random() * (this.filas - palabra.texto.length)
+          );
+          columnaInicio = Math.floor(Math.random() * this.columnas);
+
+          for (let i = 0; i < palabra.texto.length; i++) {
+            if (this.tablero[filaInicio + i][columnaInicio] !== "") {
+              espacioLibre = false;
+              break;
+            }
+          }
+
+          if (espacioLibre) {
+            for (let i = 0; i < palabra.texto.length; i++) {
+              this.tablero[filaInicio + i][columnaInicio] = palabra.texto[i];
+            }
+            colocada = true;
+          }
         }
       }
     });
   }
+
   rellenarLetras() {
     for (let i = 0; i < this.filas; i++) {
       for (let j = 0; j < this.columnas; j++) {
@@ -98,12 +138,11 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       const nuevaPalabra = new Palabra(texto);
-      sopa.agregarPalabra(nuevaPalabra);
-
-      // Mostrar palabra en lista
-      const li = document.createElement("li");
-      li.textContent = nuevaPalabra.texto;
-      listaPalabras.appendChild(li);
+      if (sopa.agregarPalabra(nuevaPalabra)) {
+        const li = document.createElement("li");
+        li.textContent = nuevaPalabra.texto;
+        listaPalabras.appendChild(li);
+      }
 
       inputPalabra.value = "";
 
